@@ -8,7 +8,7 @@ export const SocketProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState(0);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:5001', {
+    const newSocket = io('http://localhost:5005', {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,
