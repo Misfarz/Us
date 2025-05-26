@@ -33,23 +33,17 @@ app.use(express.json());
 // Database connection with retry
 const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-      throw new Error('MONGODB_URI is not defined in environment variables');
-    }
-
-    console.log('Attempting to connect to MongoDB Atlas...');
+    // Hardcoded MongoDB URI for local development
+    const uri = 'mongodb://localhost:27017/';
+    console.log('Attempting to connect to local MongoDB...');
     await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-      retryWrites: true,
-      w: 'majority'
+      serverSelectionTimeoutMS: 5000
     });
-    console.log('Successfully connected to MongoDB Atlas');
+    console.log('Successfully connected to local MongoDB');
   } catch (err) {
     console.error('MongoDB connection error:', err);
-    console.error('Connection URI:', process.env.MONGODB_URI);
     // Retry connection after 5 seconds
     setTimeout(connectDB, 5000);
   }
@@ -57,7 +51,7 @@ const connectDB = async () => {
 
 // Handle MongoDB connection events
 mongoose.connection.on('connected', () => {
-  console.log('Mongoose connected to MongoDB Atlas');
+  console.log('Mongoose connected to local MongoDB');
 });
 
 mongoose.connection.on('error', (err) => {
@@ -65,7 +59,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.log('Mongoose disconnected from MongoDB Atlas');
+  console.log('Mongoose disconnected from local MongoDB');
   // Attempt to reconnect
   setTimeout(connectDB, 5000);
 });
@@ -226,7 +220,18 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5005;
+
+// Handle server errors
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please use a different port.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', error);
+  }
+});
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 }); 
