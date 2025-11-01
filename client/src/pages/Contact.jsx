@@ -4,10 +4,27 @@ import styled from 'styled-components';
 
 const StyledPaper = styled(Paper)`
   padding: 2rem;
-  background-color: #2C2C2C;
-  color: #FFFFFF;
-  border: 4px solid #000;
-  box-shadow: 8px 8px 0px #000;
+  text-align: center;
+  background-color: ${props => props.theme.palette.background.paper};
+  border: 3px solid #000;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0px #000;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #000;
+  }
 `;
 
 const StyledTypography = styled(Typography)`
@@ -18,7 +35,7 @@ const StyledTypography = styled(Typography)`
 
 const StyledTextField = styled(TextField)`
   & .MuiOutlinedInput-root {
-    color: #FFFFFF;
+    color: #000000;
     font-family: 'Press Start 2P', cursive;
     font-size: 0.8rem;
     & fieldset {
@@ -29,7 +46,7 @@ const StyledTextField = styled(TextField)`
     }
   }
   & .MuiInputLabel-root {
-    color: #FFFFFF;
+    color: #000000;
     font-family: 'Press Start 2P', cursive;
     font-size: 0.7rem;
   }
@@ -39,7 +56,6 @@ const StyledButton = styled(Button)`
   font-family: 'Press Start 2P', cursive;
   font-size: 0.8rem;
   padding: 0.8rem 2rem;
-  background-color: #4CAF50;
   border: 3px solid #000;
   box-shadow: 4px 4px 0px #000;
   transition: all 0.2s ease-in-out;
@@ -47,7 +63,6 @@ const StyledButton = styled(Button)`
   &:hover {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0px #000;
-    background-color: #45a049;
   }
 `;
 
@@ -95,64 +110,87 @@ const Contact = () => {
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
-        <StyledTypography variant="h4" component="h1" gutterBottom sx={{ color: '#4CAF50' }}>
+        <Typography
+          variant="h1"
+          component="h1"
+          sx={{
+            mb: 4,
+            color: '#000000',
+            textShadow: '3px 3px 0px #000',
+            animation: 'pixelate 0.3s ease-in-out',
+          }}
+        >
           Contact Us
-        </StyledTypography>
-        
-        <StyledPaper>
-          <form onSubmit={handleSubmit}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <StyledTextField
-                required
-                fullWidth
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                variant="outlined"
-              />
-              <StyledTextField
-                required
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                variant="outlined"
-              />
-              <StyledTextField
-                required
-                fullWidth
-                label="Subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                variant="outlined"
-              />
-              <StyledTextField
-                required
-                fullWidth
-                label="Message"
-                name="message"
-                multiline
-                rows={4}
-                value={formData.message}
-                onChange={handleChange}
-                variant="outlined"
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <StyledButton
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                >
-                  Send Message
-                </StyledButton>
+        </Typography>
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 6,
+            color: '#000000',
+            maxWidth: '800px',
+            mx: 'auto',
+            lineHeight: 1.6,
+          }}
+        >
+          Have questions or feedback? We'd love to hear from you!
+        </Typography>
+
+        <Box sx={{ maxWidth: '600px', mx: 'auto' }}>
+          <StyledPaper>
+            <form onSubmit={handleSubmit}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <StyledTextField
+                  required
+                  fullWidth
+                  label="Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  variant="outlined"
+                />
+                <StyledTextField
+                  required
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  variant="outlined"
+                />
+                <StyledTextField
+                  required
+                  fullWidth
+                  label="Subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  variant="outlined"
+                />
+                <StyledTextField
+                  required
+                  fullWidth
+                  label="Message"
+                  name="message"
+                  multiline
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleChange}
+                  variant="outlined"
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                  <StyledButton
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    Send Message
+                  </StyledButton>
+                </Box>
               </Box>
-            </Box>
-          </form>
-        </StyledPaper>
+            </form>
+          </StyledPaper>
+        </Box>
 
         <Snackbar
           open={snackbar.open}

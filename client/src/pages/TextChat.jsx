@@ -3,7 +3,7 @@ import { Box, TextField, Button, Typography, Paper, List, ListItem, ListItemText
 import styled from 'styled-components';
 import { useSocket } from '../context/SocketContext';
 import ReportIcon from '@mui/icons-material/Report';
-import ReportDialog from './ReportDialog';
+import ReportDialog from '../components/ReportDialog';
 
 const ChatContainer = styled(Box)`
   display: flex;
