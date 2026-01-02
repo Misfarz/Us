@@ -8,7 +8,8 @@ export const SocketProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState(0);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:5005', {
+    const serverUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:5005';
+    const newSocket = io(serverUrl, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,

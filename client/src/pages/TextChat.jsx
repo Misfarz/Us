@@ -71,10 +71,16 @@ const TextChat = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
-  const { socket } = useSocket();
+  const { socket, onlineUsers } = useSocket();
 
   useEffect(() => {
     if (socket) {
+      // Check if already connected
+      if (socket.connected) {
+        setIsConnected(true);
+        socket.emit('join-room', { roomId: 'text-chat' });
+      }
+
       socket.on('connect', () => {
         console.log('Connected to server');
         setIsConnected(true);
@@ -96,11 +102,30 @@ const TextChat = () => {
         setMessages((prev) => [...prev, data]);
       });
 
+      socket.on('user-joined', (data) => {
+        setMessages((prev) => [...prev, {
+          id: Date.now(),
+          text: `${data.username} joined the chat`,
+          isSystem: true
+        }]);
+      });
+
+      socket.on('user-left', (data) => {
+        setMessages((prev) => [...prev, {
+          id: Date.now(),
+          text: `${data.username || 'A user'} left the chat`,
+          isSystem: true
+        }]);
+      });
+
       return () => {
+        socket.emit('leave-room', { roomId: 'text-chat' });
         socket.off('connect');
         socket.off('disconnect');
         socket.off('connect_error');
         socket.off('receive-message');
+        socket.off('user-joined');
+        socket.off('user-left');
       };
     }
   }, [socket]);
@@ -145,44 +170,63 @@ const TextChat = () => {
 
   return (
     <Box sx={{ textAlign: 'center', py: 4 }}>
-      <Typography 
-        variant="h4" 
-        sx={{ 
-          mb: 4, 
+      <Typography
+        variant="h4"
+        sx={{
+          mb: 1,
           color: '#000',
           fontWeight: 'bold'
         }}
       >
-        Text Chat
+        Global Text Chat
+      </Typography>
+      <Typography variant="subtitle1" sx={{ mb: 3, color: '#666' }}>
+        {onlineUsers} users online
       </Typography>
 
       <ChatContainer>
         <MessagesContainer>
           <List>
             {messages.map((msg) => (
-              <MessageItem key={msg.id}>
-                <ListItemText
-                  primary={msg.text}
-                  secondary={`${msg.sender} - ${msg.timestamp}`}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      fontSize: { xs: '0.9rem', sm: '1rem' },
-                      wordBreak: 'break-word',
-                      color: '#000'
-                    },
-                    '& .MuiListItemText-secondary': {
-                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
-                      color: '#666'
-                    }
-                  }}
-                />
-                <IconButton
-                  size="small"
-                  onClick={() => handleReport(msg)}
-                  sx={{ ml: 1 }}
-                >
-                  <ReportIcon />
-                </IconButton>
+              <MessageItem
+                key={msg.id}
+                sx={{
+                  backgroundColor: msg.isSystem ? 'transparent' : (theme) => theme.palette.background.default,
+                  border: msg.isSystem ? 'none' : '2px solid #000',
+                  justifyContent: msg.isSystem ? 'center' : 'space-between',
+                  py: msg.isSystem ? 0.5 : 1
+                }}
+              >
+                {msg.isSystem ? (
+                  <Typography variant="caption" sx={{ color: '#666', fontStyle: 'italic' }}>
+                    {msg.text}
+                  </Typography>
+                ) : (
+                  <>
+                    <ListItemText
+                      primary={msg.text}
+                      secondary={`${msg.sender} - ${msg.timestamp}`}
+                      sx={{
+                        '& .MuiListItemText-primary': {
+                          fontSize: { xs: '0.9rem', sm: '1rem' },
+                          wordBreak: 'break-word',
+                          color: '#000'
+                        },
+                        '& .MuiListItemText-secondary': {
+                          fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                          color: '#666'
+                        }
+                      }}
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={() => handleReport(msg)}
+                      sx={{ ml: 1 }}
+                    >
+                      <ReportIcon />
+                    </IconButton>
+                  </>
+                )}
               </MessageItem>
             ))}
             <div ref={messagesEndRef} />
