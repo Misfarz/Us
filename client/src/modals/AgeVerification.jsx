@@ -34,8 +34,12 @@ const AgeVerification = ({ onVerified, onDecline }) => {
   return (
     <StyledModal
       open={open}
-      disableBackdropClick
-      disableEscapeKeyDown
+      onClose={(event, reason) => {
+        // Prevent closing on backdrop click or escape key
+        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+          return;
+        }
+      }}
     >
       <ModalContent>
         <Typography variant="h5" component="h2" gutterBottom sx={{ color: '#4CAF50', fontFamily: 'Press Start 2P, cursive' }}>
